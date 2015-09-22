@@ -75,47 +75,33 @@ def algorithm(b_num, init_key, enc_or_dec):
 
     # Initial Permutation
     perm = init_perm(b_num)
-    # print "init_perm:", perm
 
     # Split into two 4-bit blocks
     p_left, p_right = split_string(perm, 4)
-    # print "Split"
-    # print "p_left:", p_left, "p_right:", p_right
 
     # Create k1 and k2 keys
     k1, k2 = create_keys(init_key)
-    # print "k1:", k1, "k2:", k2
 
     # p_right goes through F function with k1 key
     if enc_or_dec == "enc":
         p_mod = f_func(p_right, k1)
     else:
         p_mod = f_func(p_right, k2)
-    # print "F-function 1"
-    # print "p_mod:", p_mod
 
     # XOR p_left with p_mod
     p_left = "{0:04b}".format(int(p_left, 2) ^ int(p_mod, 2))
-    # print "XOR"
-    # print "p_left:", p_left
 
     # Swap p_left and p_right
     p_left, p_right = p_right, p_left
-    # print "Swap"
-    # print "p_left:", p_left, "p_right:", p_right
 
     # p_right goes through F function with k2 key
     if enc_or_dec == "enc":
         p_mod = f_func(p_right, k2)
     else:
         p_mod = f_func(p_right, k1)
-    # print "F-function 2"
-    # print "p_mod:", p_mod
 
     # XOR p_left with p_mod
     p_left = "{0:04b}".format(int(p_left, 2) ^ int(p_mod, 2))
-    # print "XOR"
-    # print "p_left:", p_left
 
     # Inverse Initial Permutation on p_left joined with p_right
     perm = inv_init_perm("".join([p_left, p_right]))
@@ -125,7 +111,6 @@ def algorithm(b_num, init_key, enc_or_dec):
 def char_to_bin(char):
     # Convert char into integer
     n = ord(char)
-    # print n
 
     # Convert integer into 8-bit binary block
     return '{0:08b}'.format(n)
@@ -134,24 +119,27 @@ def char_to_bin(char):
 def bin_to_char(b_num):
     # Convert 8-bit binary block to integer
     n = int(b_num, 2)
-    # print n
 
     # Convert integer to char
     return chr(n)
 
 
 if __name__ == "__main__":
-    in_str = sys.argv[1]
-    # print in_str
-    init_key = sys.argv[2]
-    # print init_key
+    enc_or_dec = sys.argv[1]
+    in_filename = sys.argv[2]
+    out_filename = sys.argv[3]
+    init_key = sys.argv[4]
+    bin_list = []
 
-    # Encrypt
-    enc = [bin_to_char(algorithm(char_to_bin(c), init_key, "enc")) for c in in_str]
-    # enc = algorithm(in_str, init_key, "enc")
-    print enc
+    with open(out_filename, 'w') as out_file, open(in_filename, 'r') as in_file:
+        in_str = in_file.read()
 
-    # Decrypt
-    dec = [bin_to_char(algorithm(char_to_bin(c), init_key, "dec")) for c in enc]
-    # dec = algorithm(enc, init_key, "dec")
-    print dec
+        # Encrypt
+        if enc_or_dec == "enc":
+            bin_list = [bin_to_char(algorithm(char_to_bin(c), init_key, "enc")) for c in in_str]
+
+        # Decrypt
+        elif enc_or_dec == "dec":
+            bin_list = [bin_to_char(algorithm(char_to_bin(c), init_key, "dec")) for c in in_str]
+
+        out_file.write("".join(bin_list))
