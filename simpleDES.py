@@ -67,15 +67,11 @@ def inv_init_perm(in_str):
                     in_str[6], in_str[1], in_str[7], in_str[5]])
 
 
-def algorithm(char, init_key, enc_or_dec):
-    # Convert char into integer
-    # n = ord(char)
-    # print n
-    b_num = char
-
-    # Convert integer into 8-bit binary block
-    # b_num = '{0:08b}'.format(n)
-    # print "b_num:", b_num
+def algorithm(b_num, init_key, enc_or_dec):
+    """
+    Algorithm takes a binary string, initial key, and whether to encrypt or decrypt the binary string.
+    It returns an encrypted or decrypted binary string.
+    """
 
     # Initial Permutation
     perm = init_perm(b_num)
@@ -125,12 +121,23 @@ def algorithm(char, init_key, enc_or_dec):
     perm = inv_init_perm("".join([p_left, p_right]))
     return perm
 
+
+def char_to_bin(char):
+    # Convert char into integer
+    n = ord(char)
+    # print n
+
+    # Convert integer into 8-bit binary block
+    return '{0:08b}'.format(n)
+
+
+def bin_to_char(b_num):
     # Convert 8-bit binary block to integer
-    # n = int(perm, 2)
-    # return n
+    n = int(b_num, 2)
+    # print n
 
     # Convert integer to char
-    # return chr(n)
+    return chr(n)
 
 
 if __name__ == "__main__":
@@ -140,11 +147,11 @@ if __name__ == "__main__":
     # print init_key
 
     # Encrypt
-    # enc = [algorithm(c, init_key, "enc") for c in in_str]
-    enc = algorithm(in_str, init_key, "enc")
+    enc = [bin_to_char(algorithm(char_to_bin(c), init_key, "enc")) for c in in_str]
+    # enc = algorithm(in_str, init_key, "enc")
     print enc
 
     # Decrypt
-    # dec = [algorithm(n, init_key, "dec") for n in enc]
-    dec = algorithm(enc, init_key, "dec")
+    dec = [bin_to_char(algorithm(char_to_bin(c), init_key, "dec")) for c in enc]
+    # dec = algorithm(enc, init_key, "dec")
     print dec
